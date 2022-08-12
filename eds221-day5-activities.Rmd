@@ -1,0 +1,29 @@
+---
+title: "eds221-day5-activities"
+author: "Javier Patron"
+date: "2022-08-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(devtools)
+```
+
+$$Rv=0.05+0.9∗IA$$
+
+```{r}
+
+simple_method <- function(I) {
+  r = 0.05 + (0.9 * I)
+  print(r)
+}
+
+simple_method(20)
+
+```
+
+V=3630∗RD∗ RV∗A
