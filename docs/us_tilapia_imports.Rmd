@@ -1,0 +1,81 @@
+---
+title: "us_tilapia_imports"
+author: "Javier Patron"
+date: "2022-08-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(here)
+library(janitor)
+library(tidyverse)
+library(dplyr)
+```
+
+Import data
+
+```{r}
+tilapia <- read_csv(here::here("data", "us_tilapia_imports.csv"), na = ("."))
+
+year_tilapia <- tilapia |>
+  pivot_longer(cols = (-country), values_to = "tilapia_imports" , names_to = "year" )
+
+year_tilapia |> 
+  mutate(year = as.numeric(year_tilapia$year))
+
+
+```
+
+Summarize
+
+```{r}
+
+yearly_tilapia_tot <- year_tilapia |> 
+  dplyr::group_by(year) |> 
+  summarize(total = sum(tilapia_imports, na.rm = TRUE)) |> mutate(year = as.numeric(year))
+
+```
+
+Graph
+
+```{r}
+
+yearly_tilapia_graph <- ggplot(data = yearly_tilapia_tot, aes(x= year, y = total )) +
+  geom_line() 
+
+yearly_tilapia_graph
+
+class(yearly_tilapia_tot$year)
+
+```
+
+By country
+
+```{r}
+
+country_tilapia <- year_tilapia |> 
+    filter(country %in% c("Ecuador", "Honduras", "Costa Rica", "Mexico")) |> 
+  mutate(year = as.numeric(year))
+
+```
+
+```{r}
+tilapia_filter_graph <- ggplot(data = country_tilapia, aes(x= year, y= tilapia_imports)) + 
+  geom_line(aes(color=country)) +
+  labs(title = "Tilapia Imports per countries", x= "Year", y = "Tilapia_Imports")
+
+```
+
+save it and add your questions
+
+
+```{r}
+ggsave(plot=tilapia_filter_graph, here::here("figs", "tilapia_filter_graph.png") )
+```
+
+
