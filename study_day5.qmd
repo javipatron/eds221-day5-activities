@@ -1,0 +1,71 @@
+---
+title: "study_day5"
+format: html
+editor: visual
+---
+
+### Task 2: Wild Data
+
+Download the libraries
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+Read the data
+
+```{r}
+tilapia <- read_csv(here::here("data", "us_tilapia_imports.csv"))
+```
+
+Analyze the data
+
+```{r}
+
+head(tilapia)
+summary(tilapia)
+dim(tilapia)
+```
+
+Reshape the df
+
+```{r}
+fish <- pivot_longer(data = tilapia, 
+                     cols = -country, 
+                     names_to = "year", 
+                     values_to = "amount" 
+                     )
+
+fish_clean <- fish |> 
+  mutate(year = as.numeric(year))
+```
+
+Find the *total* US tilapia imports by *year*, store as `yearly_tilapia_tot`
+
+```{r}
+yearly_tilapia_tot <- fish_clean |> 
+  dplyr::group_by(country) |> 
+  summarise(max = max(amount, na.rm = TRUE))
+```
+
+```{r}
+tot_country <- fish_clean |> 
+  group_by(country) |> 
+  summarize(tot_amout = sum(amount, na.rm =TRUE )) |> 
+  filter(country %in% c("Ecuador","Honduras", "Costa Rica", "Mexico"))
+```
+
+Plot
+
+```{r}
+
+
+plot_tilapia <- fish_clean |> 
+  filter(country %in% c("Ecuador","Honduras", "Costa Rica", "Mexico"), na.rm=TRUE)
+
+ggplot(plot_tilapia, aes(x = year, y = amount)) + 
+  geom_line(aes(color= country)) + 
+  theme_dark()
+```
